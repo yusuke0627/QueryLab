@@ -40,7 +40,14 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 - Do not claim that generated code or passing tests demonstrate the learner's understanding;
   include questions or exercises that let reviewers assess that understanding.
 - Include documentation updates for later milestones covering Go, MyGo, JOINs, and source import.
-- Do not add inline code comments, generated stubs, or dependencies without a concrete need.
+- During the current learning phase, proactively add beginner-friendly Japanese code comments.
+- Explain unfamiliar Go syntax, data flow, algorithm steps, and reasons for non-obvious choices;
+  connect query constructors such as Bool(true) to the SQL and bound arguments they produce.
+- Start temporary explanatory comment blocks with `// 学習用:` so they can be found later.
+- Keep comments accurate when code changes. Remove or consolidate learning comments only when
+  the user requests it; preserve necessary API contracts and design rationale during cleanup.
+- Keep reviewer documents alongside code comments; neither replaces the other.
+- Do not add generated stubs or dependencies without a concrete need.
 - Do not commit, create branches, or publish unless the user asks.
 
 ## Immediate next milestone

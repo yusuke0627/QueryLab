@@ -7,8 +7,10 @@ import (
 	"unicode/utf8"
 )
 
+// 学習用: 再帰が深くなりすぎないように制限します。横に広い木の総量は制限しません。
 const MaxExpressionDepth = 128
 
+// 学習用: モデルの構造を検証します。DBを見ないので、列の実在までは判定できません。
 func Validate(query Select) error {
 	if err := identifier(query.From.Name); err != nil {
 		return fmt.Errorf("from: %w", err)
@@ -23,6 +25,7 @@ func Validate(query Select) error {
 	}
 	for index, projection := range query.Columns {
 		if err := validateExpr(projection.Expr, 0, true); err != nil {
+			// 学習用: %wで元のエラーを包み、何番目の列で失敗したかを付け加えます。
 			return fmt.Errorf("columns[%d]: %w", index, err)
 		}
 		if projection.Alias != "" {
@@ -64,9 +67,12 @@ func identifier(name string) error {
 }
 
 func validateExpr(expression Expr, depth int, allowStar bool) error {
+	// 学習用: 子を検証するたびにdepthを増やし、深すぎる式や循環をここで止めます。
 	if depth >= MaxExpressionDepth {
 		return fmt.Errorf("expression exceeds maximum depth %d", MaxExpressionDepth)
 	}
+	// 学習用: 構造体では「値なのに列名も入っている」データも作れてしまいます。
+	// 種別に合わないフィールドを無視せず、不正なモデルとして拒否します。
 	if expression.Kind != ColumnExpr && (expression.Name != "" || expression.Qualifier != "") {
 		return fmt.Errorf("only column expressions may carry identifiers")
 	}
@@ -120,6 +126,8 @@ func validateExpr(expression Expr, depth int, allowStar bool) error {
 	if len(expression.Args) != expectedArgs {
 		return fmt.Errorf("%s expects %d arguments, got %d", expression.Kind, expectedArgs, len(expression.Args))
 	}
+	// 学習用: 親の形を検査した後で子へ進む、深さ優先の再帰処理です。
+	// エラーには子の位置も付け、木のどこが不正かを追えるようにします。
 	for index, argument := range expression.Args {
 		if err := validateExpr(argument, depth+1, false); err != nil {
 			return fmt.Errorf("args[%d]: %w", index, err)
@@ -129,6 +137,8 @@ func validateExpr(expression Expr, depth int, allowStar bool) error {
 }
 
 func validateScalar(value Scalar) error {
+	// 学習用: 種別と対応する値だけを持つ「正しい形」を作り、最後に入力と比較します。
+	// これにより、整数のScalarに文字列の値も入っている、といった混在を検出します。
 	canonical := Scalar{Kind: value.Kind}
 	switch value.Kind {
 	case NullValue:

@@ -10,6 +10,7 @@ import (
 	q "github.com/yusuke0627/QueryLab"
 )
 
+// 学習用: Generateはモデルを再現するGoソースを作ります。生成コードの実行はしません。
 func Generate(query q.Select, packageName string) ([]byte, error) {
 	if !token.IsIdentifier(packageName) || packageName == "_" {
 		return nil, fmt.Errorf("invalid package name %q", packageName)
@@ -17,6 +18,7 @@ func Generate(query q.Select, packageName string) ([]byte, error) {
 	if err := q.Validate(query); err != nil {
 		return nil, err
 	}
+	// 学習用: 後続の%qは文字列をGoの引用符付きリテラルにし、改行や引用符もエスケープします。
 	var source strings.Builder
 	fmt.Fprintf(&source, "package %s\n\nimport q %q\n\nvar Query = q.Select{\n", packageName, "github.com/yusuke0627/QueryLab")
 	fmt.Fprintf(&source, "From: q.Table{Name: %q, Alias: %q},\n", query.From.Name, query.From.Alias)
@@ -45,9 +47,12 @@ func Generate(query q.Select, packageName string) ([]byte, error) {
 		source.WriteString("Distinct: true,\n")
 	}
 	source.WriteString("}\n")
+	// 学習用: バッファをバイト列に変換し、標準ライブラリでGoソースを整形します。
+	// 整形だけでは型の正しさまで確認できないため、別のテストで実際にコンパイルします。
 	return format.Source([]byte(source.String()))
 }
 
+// 学習用: SQL生成と同じ木をたどり、今度はq.Colやq.Boolなどの呼び出しとして表します。
 func expression(value q.Expr) string {
 	switch value.Kind {
 	case q.ColumnExpr:
