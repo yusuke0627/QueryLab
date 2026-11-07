@@ -6,6 +6,16 @@ Goの宣言的SQLiteクエリビルダと、MyGoによるビジュアルクエ�
 管理リポジトリ: [yusuke0627/QueryLab](https://github.com/yusuke0627/QueryLab)。
 Go module pathは`github.com/yusuke0627/QueryLab`です。
 
+## このプロジェクトの目的
+
+Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶことを主目的とする開発プロジェクトです。
+動く機能とともに、仕組み・設計判断・検証結果を自分の言葉で説明できる状態を目指します。
+各実装段階の成果物には、レビュアーがコードと根拠をたどれる資料を含めます。
+
+- [学習計画](docs/learning-plan.md): 各段階で学ぶ内容と理解を確認する課題。
+- [レビュアー向けガイド](docs/review-guide.md): 読む順序、確認方法、レビュー観点。
+- [M1 SELECTコアのレビュー資料](docs/reviews/m1-select-core.md): 実装済み機能の設計・アルゴリズム・テスト・制約。
+
 ## 現在の実装
 
 - JSONに保存できる型付きQuery Modelと宣言的なGo API。
@@ -86,6 +96,9 @@ gogen/                          宣言的Goソース生成
 examples/select/                実行できるSELECT例
 docs/design.md                  設計と判断理由
 docs/implementation-plan.md     段階的な実装計画
+docs/learning-plan.md           学習目標と理解確認の課題
+docs/review-guide.md            レビュアー向けの入口と共通確認事項
+docs/reviews/                   実装段階ごとのレビュー資料
 AGENTS.md                       Codex向け開発ルール
 ```
 

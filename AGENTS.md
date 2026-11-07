@@ -6,6 +6,10 @@ Build a declarative Go SQLite query builder and a MyGo visual editor. Preserve
 the roadmap: shared Query Model, SQL and Go generation, SQLite execution,
 JOINs and relationships, MyGo GUI, and limited bidirectional editing.
 
+This is primarily a learning project for Go, MyGo, and query-builder algorithms.
+Treat explainable implementation and reviewer-facing material as deliverables.
+Prefer small, inspectable steps and document trade-offs before introducing abstractions.
+
 ## Architecture
 
 - Keep the root package as the shared, JSON-serializable Query Model and pure validation.
@@ -27,6 +31,15 @@ JOINs and relationships, MyGo GUI, and limited bidirectional editing.
 - SQL engine tests may skip only when the optional `sqlite3` CLI is unavailable.
 - Keep documentation honest about implemented features versus planned work.
 - Keep user-facing documentation in Japanese and Go identifiers in English.
+- Follow `docs/learning-plan.md` and the review process in `docs/review-guide.md`.
+- Every implementation milestone must include reviewer-facing material under `docs/reviews/`.
+- Update the relevant review document when behavior, algorithms, or design decisions change.
+- Explain learning goals, code reading order, design alternatives, algorithm steps,
+  invariants, complexity where relevant, reproduction commands, test evidence, and limitations.
+- Distinguish implemented behavior, measured results, analysis, and future work.
+- Do not claim that generated code or passing tests demonstrate the learner's understanding;
+  include questions or exercises that let reviewers assess that understanding.
+- Include documentation updates for later milestones covering Go, MyGo, JOINs, and source import.
 - Do not add inline code comments, generated stubs, or dependencies without a concrete need.
 - Do not commit, create branches, or publish unless the user asks.
 
