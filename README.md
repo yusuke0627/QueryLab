@@ -30,6 +30,8 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 
 SQLite実行API、MyGo GUI、JOIN、スキーマ取得、リレーション、SQL/Goの取り込みは今後の実装です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
+次タスクは[M2-1: 生成したSELECTのSQLite実行](docs/tasks/m2-1-sqlite-execution.md)です。
+関数の役割・結果モデル・処理の順序・テストを設計済みで、実装はこれからです。
 
 ## はじめる
 

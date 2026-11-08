@@ -52,5 +52,8 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-See `docs/implementation-plan.md`. Implement the SQLite execution adapter and
-schema discovery next, with driver selection recorded in a design decision.
+See `docs/tasks/m2-1-sqlite-execution.md` and its reviewer document.
+Implement the M2-1 SQLite execution adapter in small learning steps, starting with
+driver compatibility verification and version selection. Keep the Go minimum
+version explicit. Use ordinary functions before introducing custom interfaces.
+Schema discovery follows in M2-2; preserve the remaining roadmap.
