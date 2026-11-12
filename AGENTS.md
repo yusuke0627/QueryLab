@@ -51,6 +51,12 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 - Do not add generated stubs or dependencies without a concrete need.
 - Do not commit, create branches, or publish unless the user asks.
 
+## Git workflow
+
+- Create a topic branch before starting repository changes. Do not edit or commit on `main`.
+- Push the topic branch and open a pull request targeting `main` when authorized to publish.
+- Do not push directly to `main` or merge the pull request without the user's explicit request.
+
 ## Immediate next milestone
 
 M2-1 SQLite execution is implemented. Design M2-2 schema discovery next, using
