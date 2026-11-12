@@ -29,9 +29,20 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 - 読み取り専用のSQLite実行。列順・同名列・NULLを保持し、件数上限とキャンセルに対応。
 - `sqlite3`があれば実際のSQLiteを使うSQL動作テスト。
 
-MyGo GUI、JOIN、スキーマ取得、リレーション、SQL/Goの取り込みは今後の実装です。
+MyGo GUI、JOIN、リレーション、SQL/Goの取り込みは今後の実装です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
 SQLite実行の[設計](docs/tasks/m2-1-sqlite-execution.md)と[レビュー資料](docs/reviews/m2-1-sqlite-execution.md)を用意しています。
+
+## SQLiteの定義を調べる
+
+既存のSQLiteファイルから、テーブル・列・主キー・外部キー・索引の情報をJSONで表示できます。
+行データは取得しません。下のSQLite実行デモで作ったDBでも試せます。
+
+```sh
+CGO_ENABLED=1 go run ./examples/schema /path/to/users.db
+```
+
+[M2-2のレビュー資料](docs/reviews/m2-2-schema.md)に、読み順と確認方法をまとめています。
 
 ## はじめる
 
@@ -119,9 +130,11 @@ model.go, expr.go, validate.go   共通Query Model、宣言的API、構造検証
 dialect/sqlite/                 SQLite SQLと引数の生成
 execution/                      SELECTの実行と結果の収集
 storage/sqlite/                 SQLiteファイルを読み取り専用で開く
+schema/                         SQLiteのテーブル・列・キー・索引の取得
 gogen/                          宣言的Goソース生成
 examples/select/                SELECTのSQLとGoコードを生成する例
 examples/execute/               SQLiteから行を取得する例
+examples/schema/                SQLiteの定義をJSONで表示する例
 docs/design.md                  設計と判断理由
 docs/implementation-plan.md     段階的な実装計画
 docs/learning-plan.md           学習目標と理解確認の課題
@@ -130,7 +143,7 @@ docs/reviews/                   実装段階ごとのレビュー資料
 AGENTS.md                       Codex向け開発ルール
 ```
 
-クエリの構造検証は実装済みですが、テーブルや列の存在確認はスキーマ取得フェーズで追加します。
+スキーマ情報は取得できますが、クエリの構造検証はまだスキーマと照合しません。
 
 ## ロードマップ
 
