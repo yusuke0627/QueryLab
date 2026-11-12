@@ -24,7 +24,8 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Development
 
-- Use Go 1.23+ and standard-library tooling. The initial core has no external dependencies.
+- Use Go 1.23+ and standard-library tooling. The query model and generators do not import the SQLite driver.
+- SQLite integration tests and the execution example require CGO and a C compiler.
 - Add focused tests for behavior, errors, argument ordering, and roundtrip semantics.
 - Run `gofmt` on changed Go files, `go test ./...`, and `go vet ./...`.
 - Run `go test -race ./...` for shared-state or concurrency changes.
@@ -52,8 +53,6 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-See `docs/tasks/m2-1-sqlite-execution.md` and its reviewer document.
-Implement the M2-1 SQLite execution adapter in small learning steps, starting with
-driver compatibility verification and version selection. Keep the Go minimum
-version explicit. Use ordinary functions before introducing custom interfaces.
-Schema discovery follows in M2-2; preserve the remaining roadmap.
+M2-1 SQLite execution is implemented. Design M2-2 schema discovery next, using
+the read-only connection from `storage/sqlite` and keeping metadata separate
+from query execution. Use ordinary functions before introducing custom interfaces.

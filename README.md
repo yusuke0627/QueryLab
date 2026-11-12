@@ -26,24 +26,45 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 - ORDER BY / LIMIT / OFFSET。OFFSET単独にも対応。
 - SQLite向けSQLと引数の生成、整形済みGoソースの生成。
 - モデル検証、SQL生成、JSON往復、生成したGoのコンパイル・往復テスト。
+- 読み取り専用のSQLite実行。列順・同名列・NULLを保持し、件数上限とキャンセルに対応。
 - `sqlite3`があれば実際のSQLiteを使うSQL動作テスト。
 
-SQLite実行API、MyGo GUI、JOIN、スキーマ取得、リレーション、SQL/Goの取り込みは今後の実装です。
+MyGo GUI、JOIN、スキーマ取得、リレーション、SQL/Goの取り込みは今後の実装です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
-次タスクは[M2-1: 生成したSELECTのSQLite実行](docs/tasks/m2-1-sqlite-execution.md)です。
-関数の役割・結果モデル・処理の順序・テストを設計済みで、実装はこれからです。
+SQLite実行の[設計](docs/tasks/m2-1-sqlite-execution.md)と[レビュー資料](docs/reviews/m2-1-sqlite-execution.md)を用意しています。
 
 ## はじめる
 
-Go 1.23以降を使用します。コアは標準ライブラリだけで動作します。
+Go 1.23以降を使用します。クエリモデルと生成器は標準ライブラリだけで動作します。
+SQLite実行例と全体テストはCGOとCコンパイラが必要です。macOSではXcode Command Line Toolsを利用できます。
 
 ```sh
-go test ./...
+CGO_ENABLED=1 go test ./...
 go run ./examples/select
 ```
 
-`sqlite3` CLIはSQL動作テスト用の任意の依存です。未導入の場合、そのテストだけスキップします。
-将来のSQLite実行APIはGoの`database/sql`で実装し、CLIには依存させません。
+`sqlite3` CLIは既存のSQL動作テスト用の任意の依存です。未導入の場合、そのテストだけスキップします。
+SQLite実行APIとそのテストはGoのドライバを使い、CLIには依存しません。
+
+## SQLiteで実行する
+
+以下はCLIを使って一時フォルダにデモDBを作る手順です。実行例はDBを読み取り専用で開きます。
+
+```sh
+demo_dir=$(mktemp -d)
+sqlite3 "$demo_dir/users.db" <<'SQL'
+CREATE TABLE users (id INTEGER, name TEXT, active INTEGER, deleted_at TEXT);
+INSERT INTO users VALUES (1, 'Alice', 1, NULL), (2, 'Bob', 0, NULL),
+                         (3, 'Carol', 1, '2026-11-01');
+SQL
+CGO_ENABLED=1 go run ./examples/execute "$demo_dir/users.db"
+```
+
+出力される列は `id` と `user_name`、行は `[1 Alice]` です。
+`OpenReadOnly`がDBを開き、`Execute`が既存のSelectを実行します。
+DBは開いた側が閉じ、結果読み取り用のRowsは`Execute`が閉じます。
+`Options{}`では最大1000行・5秒です。タイムアウトは問い合わせ開始前から結果の収集までを対象にし、
+SQL生成の時間やDBの処理量そのものの上限ではありません。
 
 ## 宣言的なクエリ
 
@@ -96,8 +117,11 @@ source, err := gogen.Generate(query, "queries")
 ```text
 model.go, expr.go, validate.go   共通Query Model、宣言的API、構造検証
 dialect/sqlite/                 SQLite SQLと引数の生成
+execution/                      SELECTの実行と結果の収集
+storage/sqlite/                 SQLiteファイルを読み取り専用で開く
 gogen/                          宣言的Goソース生成
-examples/select/                実行できるSELECT例
+examples/select/                SELECTのSQLとGoコードを生成する例
+examples/execute/               SQLiteから行を取得する例
 docs/design.md                  設計と判断理由
 docs/implementation-plan.md     段階的な実装計画
 docs/learning-plan.md           学習目標と理解確認の課題
