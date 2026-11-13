@@ -59,6 +59,5 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-M2-1 SQLite execution is implemented. Design M2-2 schema discovery next, using
-the read-only connection from `storage/sqlite` and keeping metadata separate
-from query execution. Use ordinary functions before introducing custom interfaces.
+M2-2 schema discovery is implemented. Design explicit JOIN support for M3 next.
+Keep foreign-key metadata separate from query construction; do not infer joins silently.
