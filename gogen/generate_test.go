@@ -31,6 +31,10 @@ func TestGenerateRejectsInvalidInput(t *testing.T) {
 func TestGeneratedGoCompilesAndPreservesModel(t *testing.T) {
 	query := q.Select{
 		From: q.Table{Name: "users", Alias: "u"},
+		Joins: []q.Join{
+			{Kind: q.InnerJoin, Table: q.Table{Name: "teams", Alias: "t"}, On: q.Eq(q.Ref("u", "team_id"), q.Ref("t", "id"))},
+			{Kind: q.LeftJoin, Table: q.Table{Name: "users", Alias: "manager"}, On: q.Eq(q.Ref("t", "manager_id"), q.Ref("manager", "id"))},
+		},
 		Columns: []q.Projection{
 			{Expr: q.Star()},
 			{Expr: q.Ref("u", "id"), Alias: "user_id"},
