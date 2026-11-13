@@ -29,7 +29,8 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 - 読み取り専用のSQLite実行。列順・同名列・NULLを保持し、件数上限とキャンセルに対応。
 - `sqlite3`があれば実際のSQLiteを使うSQL動作テスト。
 
-MyGo GUI、JOIN、リレーション、SQL/Goの取り込みは今後の実装です。
+明示的なINNER JOIN / LEFT JOINに対応しています。[JOINの書き方とレビュー資料](docs/reviews/m3-1-joins.md)を参照してください。
+MyGo GUI、外部キーからのリレーション候補、SQL/Goの取り込みは今後の実装です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
 SQLite実行の[設計](docs/tasks/m2-1-sqlite-execution.md)と[レビュー資料](docs/reviews/m2-1-sqlite-execution.md)を用意しています。
 

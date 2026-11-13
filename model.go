@@ -4,6 +4,7 @@ package querylab
 // この構造体を作るだけではSQLの生成やDBへの問い合わせは行いません。
 type Select struct {
 	From    Table        `json:"from"`
+	Joins   []Join       `json:"joins,omitempty"`
 	Columns []Projection `json:"columns"`
 	// 学習用: *Expr は式へのポインタです。nilならWHEREが未指定だと表せます。
 	Where   *Expr   `json:"where,omitempty"`
@@ -19,6 +20,20 @@ type Select struct {
 type Table struct {
 	Name  string `json:"name"`
 	Alias string `json:"alias,omitempty"`
+}
+
+type JoinKind string
+
+const (
+	InnerJoin JoinKind = "INNER"
+	LeftJoin  JoinKind = "LEFT"
+)
+
+// Join は結合の種類、右側のテーブル、行同士を対応づける条件を表します。
+type Join struct {
+	Kind  JoinKind `json:"kind"`
+	Table Table    `json:"table"`
+	On    Expr     `json:"on"`
 }
 
 // 学習用: Projection はSELECTで取り出す項目です。列のほか、値や式も指定できます。
