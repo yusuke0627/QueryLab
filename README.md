@@ -30,7 +30,8 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 - `sqlite3`があれば実際のSQLiteを使うSQL動作テスト。
 
 明示的なINNER JOIN / LEFT JOINに対応しています。[JOINの書き方とレビュー資料](docs/reviews/m3-1-joins.md)を参照してください。
-MyGo GUI、外部キーからのリレーション候補、SQL/Goの取り込みは今後の実装です。
+外部キーから直接のJOIN候補を取得し、選択した候補をJOINに変換できます。[使い方](docs/reviews/m3-2-relationships.md)を参照してください。
+MyGo GUI、結果のネスト、SQL/Goの取り込みは今後の実装です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
 SQLite実行の[設計](docs/tasks/m2-1-sqlite-execution.md)と[レビュー資料](docs/reviews/m2-1-sqlite-execution.md)を用意しています。
 

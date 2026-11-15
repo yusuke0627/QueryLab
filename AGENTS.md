@@ -59,5 +59,5 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-M3-1 explicit INNER and LEFT JOIN support is implemented. Design foreign-key relationship suggestions next.
+M3-2 foreign-key relationship suggestions are implemented. Design result mapping next without changing flat query results.
 Keep foreign-key metadata separate from query construction; do not infer joins silently.
