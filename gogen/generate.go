@@ -22,6 +22,18 @@ func Generate(query q.Select, packageName string) ([]byte, error) {
 	var source strings.Builder
 	fmt.Fprintf(&source, "package %s\n\nimport q %q\n\nvar Query = q.Select{\n", packageName, "github.com/yusuke0627/QueryLab")
 	fmt.Fprintf(&source, "From: q.Table{Name: %q, Alias: %q},\n", query.From.Name, query.From.Alias)
+	if len(query.Joins) > 0 {
+		source.WriteString("Joins: []q.Join{\n")
+		for _, join := range query.Joins {
+			kind := "q.InnerJoin"
+			if join.Kind == q.LeftJoin {
+				kind = "q.LeftJoin"
+			}
+			fmt.Fprintf(&source, "{Kind: %s, Table: q.Table{Name: %q, Alias: %q}, On: %s},\n",
+				kind, join.Table.Name, join.Table.Alias, expression(join.On))
+		}
+		source.WriteString("},\n")
+	}
 	source.WriteString("Columns: []q.Projection{\n")
 	for _, projection := range query.Columns {
 		fmt.Fprintf(&source, "{Expr: %s, Alias: %q},\n", expression(projection.Expr), projection.Alias)

@@ -59,5 +59,5 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-M2-2 schema discovery is implemented. Design explicit JOIN support for M3 next.
+M3-1 explicit INNER and LEFT JOIN support is implemented. Design foreign-key relationship suggestions next.
 Keep foreign-key metadata separate from query construction; do not infer joins silently.

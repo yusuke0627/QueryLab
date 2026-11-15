@@ -12,19 +12,27 @@ const MaxExpressionDepth = 128
 
 // 学習用: モデルの構造を検証します。DBを見ないので、列の実在までは判定できません。
 func Validate(query Select) error {
-	if err := identifier(query.From.Name); err != nil {
+	sources := make(map[string]struct{}, len(query.Joins)+1)
+	if err := addSource(sources, query.From); err != nil {
 		return fmt.Errorf("from: %w", err)
 	}
-	if query.From.Alias != "" {
-		if err := identifier(query.From.Alias); err != nil {
-			return fmt.Errorf("from alias: %w", err)
+	for index, join := range query.Joins {
+		if join.Kind != InnerJoin && join.Kind != LeftJoin {
+			return fmt.Errorf("joins[%d]: unsupported join kind %q", index, join.Kind)
+		}
+		if err := addSource(sources, join.Table); err != nil {
+			return fmt.Errorf("joins[%d] table: %w", index, err)
+		}
+		// 学習用: この時点で登録済みなのはFROMと現在までのJOINだけです。
+		if err := validateScopedExpr(join.On, false, sources); err != nil {
+			return fmt.Errorf("joins[%d] on: %w", index, err)
 		}
 	}
 	if len(query.Columns) == 0 {
 		return fmt.Errorf("columns: at least one projection is required")
 	}
 	for index, projection := range query.Columns {
-		if err := validateExpr(projection.Expr, 0, true); err != nil {
+		if err := validateScopedExpr(projection.Expr, true, sources); err != nil {
 			// 学習用: %wで元のエラーを包み、何番目の列で失敗したかを付け加えます。
 			return fmt.Errorf("columns[%d]: %w", index, err)
 		}
@@ -38,12 +46,12 @@ func Validate(query Select) error {
 		}
 	}
 	if query.Where != nil {
-		if err := validateExpr(*query.Where, 0, false); err != nil {
+		if err := validateScopedExpr(*query.Where, false, sources); err != nil {
 			return fmt.Errorf("where: %w", err)
 		}
 	}
 	for index, order := range query.OrderBy {
-		if err := validateExpr(order.Expr, 0, false); err != nil {
+		if err := validateScopedExpr(order.Expr, false, sources); err != nil {
 			return fmt.Errorf("order_by[%d]: %w", index, err)
 		}
 		if order.Direction != "" && order.Direction != Ascending && order.Direction != Descending {
@@ -55,6 +63,56 @@ func Validate(query Select) error {
 	}
 	if query.Offset != nil && *query.Offset < 0 {
 		return fmt.Errorf("offset: must be nonnegative")
+	}
+	return nil
+}
+
+func addSource(sources map[string]struct{}, table Table) error {
+	if err := identifier(table.Name); err != nil {
+		return err
+	}
+	name := table.Name
+	if table.Alias != "" {
+		if err := identifier(table.Alias); err != nil {
+			return fmt.Errorf("alias: %w", err)
+		}
+		name = table.Alias
+	}
+	key := sourceKey(name)
+	if _, exists := sources[key]; exists {
+		return fmt.Errorf("duplicate table qualifier %q", name)
+	}
+	sources[key] = struct{}{}
+	return nil
+}
+
+func sourceKey(name string) string {
+	// 学習用: SQLiteの識別子比較に合わせ、ASCIIの大文字だけを小文字にします。
+	return strings.Map(func(character rune) rune {
+		if character >= 'A' && character <= 'Z' {
+			return character + ('a' - 'A')
+		}
+		return character
+	}, name)
+}
+
+func validateScopedExpr(expression Expr, allowStar bool, sources map[string]struct{}) error {
+	if err := validateExpr(expression, 0, allowStar); err != nil {
+		return err
+	}
+	return validateQualifiers(expression, sources)
+}
+
+func validateQualifiers(expression Expr, sources map[string]struct{}) error {
+	if expression.Kind == ColumnExpr && expression.Qualifier != "" {
+		if _, exists := sources[sourceKey(expression.Qualifier)]; !exists {
+			return fmt.Errorf("unknown table qualifier %q", expression.Qualifier)
+		}
+	}
+	for _, child := range expression.Args {
+		if err := validateQualifiers(child, sources); err != nil {
+			return err
+		}
 	}
 	return nil
 }

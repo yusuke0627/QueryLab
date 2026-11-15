@@ -35,9 +35,11 @@ func Compile(query q.Select) (Statement, error) {
 			sql.WriteString(" AS " + quote(projection.Alias))
 		}
 	}
-	sql.WriteString(" FROM " + quote(query.From.Name))
-	if query.From.Alias != "" {
-		sql.WriteString(" AS " + quote(query.From.Alias))
+	sql.WriteString(" FROM " + tableSQL(query.From))
+	for _, join := range query.Joins {
+		// 学習用: SQLに現れる順に式を処理するため、ONの値はWHEREの値より先に入ります。
+		sql.WriteString(" " + string(join.Kind) + " JOIN " + tableSQL(join.Table))
+		sql.WriteString(" ON " + compiler.expression(join.On))
 	}
 	if query.Where != nil {
 		sql.WriteString(" WHERE " + compiler.expression(*query.Where))
@@ -133,4 +135,12 @@ func (compiler *compiler) expression(expression q.Expr) string {
 // 名前に含まれる二重引用符を二重にしてから、名前全体を二重引用符で囲みます。
 func quote(identifier string) string {
 	return `"` + strings.ReplaceAll(identifier, `"`, `""`) + `"`
+}
+
+func tableSQL(table q.Table) string {
+	name := quote(table.Name)
+	if table.Alias != "" {
+		name += " AS " + quote(table.Alias)
+	}
+	return name
 }

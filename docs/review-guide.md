@@ -21,7 +21,8 @@ QueryLabはGo・MyGoとクエリビルダのアルゴリズムを学ぶプロジ
 | M1 SELECTコア | 実装済み | [設計・アルゴリズム・検証・理解確認](reviews/m1-select-core.md) |
 | M2-1 SQLite実行 | 実装済み | [実装レビュー](reviews/m2-1-sqlite-execution.md) |
 | M2-2 スキーマ取得 | 実装済み | [実装レビュー](reviews/m2-2-schema.md) |
-| M3 JOIN・リレーション | 未実装 | 実装時に追加 |
+| M3-1 明示的なJOIN | 実装済み | [実装レビュー](reviews/m3-1-joins.md) |
+| M3後続 リレーション候補・マッピング | 未実装 | 実装時に追加 |
 | M4 MyGo GUI | 未実装 | 実装時に追加 |
 | M5 限定的双方向編集 | 未実装 | 実装時に追加 |
 
