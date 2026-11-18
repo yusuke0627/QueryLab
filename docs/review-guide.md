@@ -23,7 +23,7 @@ QueryLabはGo・MyGoとクエリビルダのアルゴリズムを学ぶプロジ
 | M2-2 スキーマ取得 | 実装済み | [実装レビュー](reviews/m2-2-schema.md) |
 | M3-1 明示的なJOIN | 実装済み | [実装レビュー](reviews/m3-1-joins.md) |
 | M3-2 リレーション候補 | 実装済み | [実装レビュー](reviews/m3-2-relationships.md) |
-| M3後続 結果のマッピング | 未実装 | 実装時に追加 |
+| M3-3 結果のマッピング | 実装済み | [実装レビュー](reviews/m3-3-result-mapping.md) |
 | M4 MyGo GUI | 未実装 | 実装時に追加 |
 | M5 限定的双方向編集 | 未実装 | 実装時に追加 |
 
