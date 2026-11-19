@@ -32,7 +32,7 @@ Go（Golang）、MyGo、クエリビルダのアルゴリズムを学ぶこと�
 明示的なINNER JOIN / LEFT JOINに対応しています。[JOINの書き方とレビュー資料](docs/reviews/m3-1-joins.md)を参照してください。
 外部キーから直接のJOIN候補を取得し、選択した候補をJOINに変換できます。[使い方](docs/reviews/m3-2-relationships.md)を参照してください。
 JOINの結果は、親・子のキーを指定してネストできます。[結果のまとめ方](docs/reviews/m3-3-result-mapping.md)を参照してください。
-MyGo GUIとSQL/Goの取り込みは今後の実装です。
+MyGoの最小GUIでSQL/Goプレビューを作れます。GUIのDB接続・JOIN編集とSQL/Goの取り込みは後続です。
 今回の完了範囲と各フェーズの受け入れ条件は[実装計画](docs/implementation-plan.md)に記載しています。
 SQLite実行の[設計](docs/tasks/m2-1-sqlite-execution.md)と[レビュー資料](docs/reviews/m2-1-sqlite-execution.md)を用意しています。
 
@@ -59,6 +59,31 @@ go run ./examples/select
 
 `sqlite3` CLIは既存のSQL動作テスト用の任意の依存です。未導入の場合、そのテストだけスキップします。
 SQLite実行APIとそのテストはGoのドライバを使い、CLIには依存しません。
+
+## 最小GUIを試す（M4-1）
+
+MyGo v0.10.0のネイティブUIを使います。HTMLやJavaScriptは使いません。
+テーブル名・取得列・件数とサンプルの条件を入力し、SQLとGoコードを生成します。
+DBには接続しません。実画面の見た目・日本語入力は、Macのロックにより今回未確認です。
+
+```sh
+cd desktop
+GOWORK=off go tool mygo dev
+```
+
+GUIはGo 1.27.3の独立モジュールです。初回はGoが対応ツールチェーンと依存を取得します。
+クエリ本体のルートモジュールはGo 1.23のままで、MyGoには依存しません。
+rootの `go test ./...` はGUIを含まないため、GUIのテストは別に行います。
+
+```sh
+cd desktop
+GOWORK=off CGO_ENABLED=0 go test ./...
+GOWORK=off CGO_ENABLED=0 go vet ./...
+GOWORK=off go tool mygo vet .
+```
+
+各コマンド例の `cd desktop` は、リポジトリのルートから実行する場合です。
+採用理由・読み順・確認問題は[M4-1のレビュー資料](docs/reviews/m4-1-mygo-spike.md)を参照してください。
 
 ## SQLiteで実行する
 
@@ -133,6 +158,7 @@ model.go, expr.go, validate.go   共通Query Model、宣言的API、構造検証
 dialect/sqlite/                 SQLite SQLと引数の生成
 execution/                      SELECTの実行と結果の収集
 storage/sqlite/                 SQLiteファイルを読み取り専用で開く
+desktop/                        MyGoの最小GUI（独立したGoモジュール）
 schema/                         SQLiteのテーブル・列・キー・索引の取得
 gogen/                          宣言的Goソース生成
 examples/select/                SELECTのSQLとGoコードを生成する例
@@ -156,5 +182,5 @@ AGENTS.md                       Codex向け開発ルール
 4. MyGo GUI、テーブル・列・条件・JOINの視覚編集、SQL/Go/結果の同期表示。
 5. 対応構文を明示したSQL/Go → Modelの取り込みと限定的双方向編集。
 
-MyGoの具体的な依存先・バージョン・接続方式はGUIフェーズの調査で確定します。
+MyGoはgithub.com/egoist/mygo v0.10.0のネイティブUIを採用し、共通モデルを直接使います。
 参照会話から提案本文を取得できなかったため、本リポジトリは引き継ぎ依頼に列挙された合意事項を基準にしています。

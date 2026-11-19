@@ -24,7 +24,8 @@ QueryLabはGo・MyGoとクエリビルダのアルゴリズムを学ぶプロジ
 | M3-1 明示的なJOIN | 実装済み | [実装レビュー](reviews/m3-1-joins.md) |
 | M3-2 リレーション候補 | 実装済み | [実装レビュー](reviews/m3-2-relationships.md) |
 | M3-3 結果のマッピング | 実装済み | [実装レビュー](reviews/m3-3-result-mapping.md) |
-| M4 MyGo GUI | 未実装 | 実装時に追加 |
+| M4-1 MyGo最小GUI | 試作済み・実画面未確認 | [技術検証レビュー](reviews/m4-1-mygo-spike.md) |
+| M4-2以降 GUIのDB接続・編集・保存 | 未実装 | 実装時に追加 |
 | M5 限定的双方向編集 | 未実装 | 実装時に追加 |
 
 ## 共通の確認観点
