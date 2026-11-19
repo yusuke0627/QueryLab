@@ -22,6 +22,15 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 - Add JOINs explicitly before introducing relationship conveniences. Never infer joins silently.
 - Keep SQL/Go source import restricted to documented supported syntax; never execute imported Go.
 
+## 設計原則：Simple Made Easy
+
+Rich Hickeyの *Simple Made Easy* を設計判断の指針とする。単純さはコードの短さではなく、別々に理解・変更・検証できるはずの関心事が、不必要に絡み合っていないことで判断する。
+
+- クエリの意図はデータで表す。画面の状態、クエリモデル、SQL・Goコードの生成、DB実行の責務を分ける。
+- 変換は入力と出力を明示し、入力を原則として変更しない。関数内だけで使う一時的な状態は、処理を追いやすくするなら使ってよい。
+- 新しい抽象化や依存は、具体的な必要性があるときに導入する。重要な設計判断では「何を独立して変更・検証できるようにしたか」をレビュー資料で説明する。
+- この原則だけを理由に依頼範囲外の書き換えを行わない。機能要件と正確性を守り、同じくらい単純なら、学びやすく使いやすい案を選ぶ。
+
 ## Development
 
 - Use Go 1.23+ and standard-library tooling. The query model and generators do not import the SQLite driver.
@@ -59,5 +68,8 @@ Prefer small, inspectable steps and document trade-offs before introducing abstr
 
 ## Immediate next milestone
 
-M3-3 result mapping is implemented. Verify the MyGo dependency, API, and a minimal GUI for M4 next.
+M4-1 native preview is prototyped in the separate Go 1.27.3 desktop module.
+Confirm the actual window and Japanese input on an unlocked Mac before treating the UI spike as verified.
+Then design M4-2 persistence and DB/schema integration, keeping slow I/O off the UI thread.
+Root Go 1.23 checks and desktop checks must run separately; see desktop/AGENTS.md.
 Keep foreign-key metadata separate from query construction; do not infer joins silently.
